@@ -1,0 +1,11 @@
+[kubernetes_workers]
+
+[kubernetes_masters]
+
+[kubernetes:children]
+kubernetes_masters
+kubernetes_workers
+
+[kubernetes:vars]
+ansible_ssh_user=user
+ansible_ssh_pass=password

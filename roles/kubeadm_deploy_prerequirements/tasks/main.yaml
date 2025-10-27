@@ -1,0 +1,113 @@
+---
+#- name: Installing required packages
+#  ansible.builtin.apt:
+#    name: "{{ item }}"
+#    state: present
+#  loop:
+#     "{{ packages_to_install }}"
+#
+#- name: Disable swap for the current session
+#  ansible.builtin.shell:
+#    cmd: swapoff -a
+#
+#- name: Disable swap permanently
+#  ansible.builtin.replace:
+#    path: /etc/fstab
+#    regexp: '(^\/swap\.img)(.*)'
+#    replace: '#\1\2'
+#    backup: yes
+
+#- name: Downloading tarball containerd package
+#  ansible.builtin.get_url:
+#    url:  "{{ containerd_url }}"
+#    dest: "{{ dir_install }}"
+#    timeout: "{{ http_timeout }}"
+#    checksum: "{{ containerd_checksum }}"
+#
+#- name: Extracting containerd tarball package
+#  ansible.builtin.unarchive:
+#    remote_src: true
+#    dest: "{{ dir_install }}"
+#    src:  "{{ dir_install }}/containerd-2.1.4-linux-amd64.tar.gz"
+#
+#- name: Copying containerd unit file
+#  ansible.builtin.copy:
+#    src: containerd.service
+#    dest: "{{ unit_service_dir }}"
+#
+#- name: Starting containerd unit service
+#  ansible.builtin.systemd_service:
+#    daemon_reload: yes
+#    enabled: yes
+#    name: containerd
+#    state: started    
+
+#- name: Downloading runc tarball package
+#  ansible.builtin.get_url:
+#    url:  "{{ runc_url }}"
+#    dest: "{{ dir_install }}"
+#    timeout: "{{ http_timeout }}"
+#
+#- name: Extracting runc tarball package
+#  ansible.builtin.unarchive:
+#    remote_src: true
+#    dest: "{{ dir_install }}/sbin"
+#    src:  "{{ dir_install }}/{{ runc_version }}.tar.gz"
+#
+#- name: Create a symbolic link to runc
+#  ansible.builtin.file:
+#    src: "{{ dir_install }}/sbin/{{ runc_version }}"
+#    dest: "{{ dir_install }}/sbin/runc"
+#    state: link
+
+#- name: Downloading tarball CNI plugin package
+#  ansible.builtin.get_url:
+#    url:  "{{ cni_plugin_url }}"
+#    dest: "{{ dir_install }}"
+#    timeout: "{{ http_timeout }}"
+#    checksum: "{{ cni_plugin_checksum }}"
+
+#- name: Extracting containerd tarball package
+#  ansible.builtin.unarchive:
+#    remote_src: true
+#    dest: "{{ cni_dir_install }}"
+#    src:  "{{ dir_install }}/cni-plugins-linux-amd64-{{cni_plugin_version}}.tgz"
+
+#- name: Downloading kubernetes gpg key
+#  ansible.builtin.get_url:
+#    url: "{{ kubernetes_gpg_repo_key_url }}"
+#    dest: "{{ gpg_signed_directory }}/kubernetes-list.asc"
+#    timeout: "{{ http_timeout }}"
+
+- name: Adding kernel settings for Kubernetes
+  ansible.builtin.copy:
+    src: 25-kubernetes.conf
+    dest: "{{ kubernetes_kernel_settings }}"
+
+- name: Appling kernel settings for kubernetes
+  ansible.builtin.shell:
+    cmd: "sysctl -p {{ kubernetes_kernel_settings }}"
+    
+#- name: Add Kubernetes repo
+#  ansible.builtin.apt_repository:
+#    filename: kubernetes-list
+#    repo: "deb [signed-by={{gpg_signed_directory}}/kubernetes-list.asc] https://pkgs.k8s.io/core:/stable:/{{kubernetes_version}}/deb/ /"
+#
+#- name: Installing kubeadm, kubectl and kubelet
+#  ansible.builtin.apt:
+#    name: "{{ item }}"
+#    state: present
+#  loop:
+#     "{{ kubernetes_packages }}"
+#
+#- name: Starting kubelet unit service
+#  ansible.builtin.systemd_service:
+#    daemon_reload: yes
+#    enabled: yes
+#    name: kubelet
+#    state: started    
+#
+#- name: Holding Kubernetes packages
+#  ansible.builtin.shell:
+#    cmd: apt-mark hold kubelet kubeadm kubectl
+...  

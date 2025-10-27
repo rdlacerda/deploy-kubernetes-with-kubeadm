@@ -1,0 +1,6 @@
+--- 
+- name: Starting deploy Kubernetes
+  hosts: kubernetes_workers
+  roles:
+    - kubeadm_deploy_prerequirements
+...
